@@ -16,7 +16,7 @@ public class JWTSecurityConfig {
 	    http.csrf(csrf -> csrf.disable())
 	    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	    .authorizeHttpRequests(authz -> authz
-		    .requestMatchers("/actuator/health").permitAll()
+		    .requestMatchers("/actuator/health/**").permitAll()
 	    	.requestMatchers("/public/login").authenticated()
 	    	.anyRequest().authenticated());
 	    return http.build();

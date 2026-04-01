@@ -1,5 +1,6 @@
 pathops-control-plane_dump.txt
 .envrc.local
+k8s/secret.yaml
 # Created by https://www.toptal.com/developers/gitignore/api/maven,java,eclipse,vim
 # Edit at https://www.toptal.com/developers/gitignore?templates=maven,java,eclipse,vim
 
