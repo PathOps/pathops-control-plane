@@ -23,6 +23,7 @@ spec:
       containers:
         - name: control-plane
           image: gborba/pathops-control-plane:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:
