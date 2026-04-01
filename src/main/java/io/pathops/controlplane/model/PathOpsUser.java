@@ -13,13 +13,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "pathops_users")
+@Table(
+	    name = "pathops_users",
+	    uniqueConstraints = {
+	        @UniqueConstraint(name = "uk_pathops_user_issuer_subject", columnNames = {"issuer", "subject"})
+	    }
+	)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
@@ -41,7 +47,7 @@ public class PathOpsUser {
     @Column(name = "issuer", nullable = false)
     private String issuer;
 
-    @Column(name = "subject", nullable = false, unique = true)
+    @Column(name = "subject", nullable = false)
     private String subject;
 
     @Column(name = "preferred_username", nullable = false)
