@@ -14,6 +14,11 @@ RUN mvn package -DskipTests --no-transfer-progress
 FROM eclipse-temurin:25-jre
 WORKDIR /app
 
+ARG GIT_COMMIT=unknown
+ARG GIT_BRANCH=unknown
+ENV GIT_COMMIT=${GIT_COMMIT}
+ENV GIT_BRANCH=${GIT_BRANCH}
+
 COPY --from=builder /build/target/pathops-control-plane-*.jar app.jar
 
 EXPOSE 8080

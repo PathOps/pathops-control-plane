@@ -17,6 +17,8 @@ public class JWTSecurityConfig {
 	    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 	    .authorizeHttpRequests(authz -> authz
 		    .requestMatchers("/actuator/health/**").permitAll()
+		    .requestMatchers("/actuator/info").permitAll()
+		    .requestMatchers("/actuator/**").denyAll()
 	    	.requestMatchers("/api/public/login").authenticated()
 	    	.anyRequest().authenticated());
 	    return http.build();
