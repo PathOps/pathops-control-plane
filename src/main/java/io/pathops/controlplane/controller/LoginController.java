@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/public")
+@RequestMapping("/public")
 public class LoginController {
 
     private final JSendResponseFactory jSendResponseFactory;

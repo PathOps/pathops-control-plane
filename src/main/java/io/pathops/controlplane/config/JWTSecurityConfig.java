@@ -19,7 +19,7 @@ public class JWTSecurityConfig {
 		    .requestMatchers("/actuator/health/**").permitAll()
 		    .requestMatchers("/actuator/info").permitAll()
 		    .requestMatchers("/actuator/**").denyAll()
-	    	.requestMatchers("/api/public/login").authenticated()
+	    	.requestMatchers("/public/login").authenticated()
 	    	.anyRequest().authenticated());
 	    return http.build();
 	}
