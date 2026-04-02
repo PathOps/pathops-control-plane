@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "pathops.public.base-url",
+      "type": "java.lang.String",
+      "description": "Public base URL of the PathOps control plane."
+    },
+    {
+      "name": "pathops.auth.issuer",
+      "type": "java.lang.String",
+      "description": "OAuth2 issuer URL used for JWT validation."
+    },
+    {
+      "name": "pathops.auth.client-id",
+      "type": "java.lang.String",
+      "description": "OAuth2 client ID for the control plane public client."
+    }
+  ]
+}

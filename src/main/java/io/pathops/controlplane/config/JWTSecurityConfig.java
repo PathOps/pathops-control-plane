@@ -20,6 +20,7 @@ public class JWTSecurityConfig {
 		    .requestMatchers("/actuator/health/**").permitAll()
 		    .requestMatchers("/actuator/info").permitAll()
 		    .requestMatchers("/actuator/**").denyAll()
+		    .requestMatchers("/public/auth/config").permitAll()
 	    	.requestMatchers("/public/login").authenticated()
 	    	.anyRequest().authenticated())
 	    .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
