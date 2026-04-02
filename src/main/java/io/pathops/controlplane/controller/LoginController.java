@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.pathops.controlplane.response.JSendResponse;
@@ -14,12 +15,13 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/public")
 public class LoginController {
 
     private final JSendResponseFactory jSendResponseFactory;
     private final LoginService loginService;
 
-    @PostMapping("/public/login")
+    @PostMapping("/login")
     public ResponseEntity<JSendResponse> login(@AuthenticationPrincipal Jwt jwt) {
         var result = loginService.login(jwt);
 
