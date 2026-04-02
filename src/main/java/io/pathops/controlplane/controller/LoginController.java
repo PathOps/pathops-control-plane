@@ -23,7 +23,8 @@ public class LoginController {
 
     @PostMapping("/login")
     public ResponseEntity<JSendResponse> login(@AuthenticationPrincipal Jwt jwt) {
-        var result = loginService.login(jwt);
+        
+    	var result = loginService.login(jwt);
 
         return ResponseEntity
             .status(HttpStatus.CREATED)
