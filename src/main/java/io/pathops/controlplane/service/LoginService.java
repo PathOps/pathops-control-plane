@@ -26,6 +26,7 @@ public class LoginService {
     private final PathOpsUserRepository pathOpsUserRepository;
     private final TenantRepository tenantRepository;
     private final MembershipRepository membershipRepository;
+    private final TenantProvisioningService tenantProvisioningService;
 
     @Transactional
     public LoginResult login(Jwt jwt) {
@@ -69,6 +70,8 @@ public class LoginService {
             membership.setTenant(tenant);
             membership.setRole(MembershipRole.OWNER);
             membership = membershipRepository.save(membership);
+
+            tenantProvisioningService.provisionTenantForUser(user, tenant);
 
             return LoginResult.builder()
                 .userId(user.getId())

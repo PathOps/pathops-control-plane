@@ -11,3 +11,5 @@ data:
   PATHOPS_PUBLIC_BASE_URL: "https://control-plane.demo.pathops.io"
   PATHOPS_AUTH_ISSUER: "https://keycloak.demo.pathops.io/realms/pathops"
   PATHOPS_AUTH_CLIENT_ID: "control-plane-public"
+  PATHOPS_VAULT_BASE_URL: "https://vault.demo.pathops.io"
+  PATHOPS_VAULT_KV_MOUNT: "secret"

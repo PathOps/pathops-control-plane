@@ -55,4 +55,7 @@ public class PathOpsUser {
 
     @Column(name = "email")
     private String email;
+    
+    @Column(name = "keycloak_user_id")
+    private String keycloakUserId;
 }
