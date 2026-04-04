@@ -2,9 +2,9 @@ package io.pathops.controlplane.utils;
 
 import org.springframework.security.oauth2.jwt.Jwt;
 
-public final class JwtUtility {
+public final class JwtUtils {
 
-    private JwtUtility() {
+    private JwtUtils() {
     }
 
     public static String getSubject(Jwt jwt) {

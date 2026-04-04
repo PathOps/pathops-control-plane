@@ -1,146 +1,86 @@
 package io.pathops.controlplane.service;
 
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.util.Set;
 
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import io.pathops.controlplane.dto.LoginResult;
-import io.pathops.controlplane.model.Membership;
-import io.pathops.controlplane.model.MembershipRole;
-import io.pathops.controlplane.model.PathOpsUser;
+import io.pathops.controlplane.model.ProvisioningTool;
 import io.pathops.controlplane.model.Tenant;
-import io.pathops.controlplane.repository.MembershipRepository;
-import io.pathops.controlplane.repository.PathOpsUserRepository;
-import io.pathops.controlplane.repository.TenantRepository;
-import io.pathops.controlplane.utils.JwtUtility;
+import io.pathops.controlplane.model.TenantProvisioning;
+import io.pathops.controlplane.repository.TenantProvisioningRepository;
+import io.pathops.controlplane.utils.JwtUtils;
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class LoginService {
 
-    private final PathOpsUserRepository pathOpsUserRepository;
-    private final TenantRepository tenantRepository;
-    private final MembershipRepository membershipRepository;
+    private final UserService userService;
     private final TenantProvisioningService tenantProvisioningService;
+    private final TenantProvisioningRepository provisioningRepository;
 
-    @Transactional
     public LoginResult login(Jwt jwt) {
-        String subject = JwtUtility.getSubject(jwt);
-        String issuer = JwtUtility.getIssuer(jwt);
-        String preferredUsername = JwtUtility.getPreferredUsername(jwt);
-        String email = JwtUtility.getEmail(jwt);
+        String subject = JwtUtils.getSubject(jwt);
+        String issuer = JwtUtils.getIssuer(jwt);
+        String preferredUsername = JwtUtils.getPreferredUsername(jwt);
+        String email = JwtUtils.getEmail(jwt);
 
-        boolean identityChanged = false;
+        CreateOrUpdateUserResult createOrUpdateUserResult = userService.createOrUpdateUser(
+            issuer,
+            subject,
+            preferredUsername,
+            email
+        );
 
-        PathOpsUser user = pathOpsUserRepository
-            .findByIssuerAndSubject(issuer, subject)
-            .orElse(null);
+        Set<ProvisioningTool> missingTools = getProvisioningToolsNeeded(createOrUpdateUserResult.tenant());
 
-        if (user == null) {
-            user = new PathOpsUser();
-            user.setIssuer(issuer);
-            user.setSubject(subject);
-            user.setPreferredUsername(preferredUsername);
-            user.setEmail(email);
-            user = pathOpsUserRepository.save(user);
-            identityChanged = true;
-        } else {
-            boolean userUpdated = updateUserIfNeeded(user, preferredUsername, email);
-            if (userUpdated) {
-                user = pathOpsUserRepository.save(user);
-                identityChanged = true;
-            }
+        boolean provisioningTriggered = !missingTools.isEmpty();
+        if (provisioningTriggered) {
+            tenantProvisioningService.provisionTenantForUser(
+                createOrUpdateUserResult.user(),
+                createOrUpdateUserResult.tenant()
+            );
         }
-
-        List<Membership> memberships = membershipRepository.findByUser(user);
-
-        if (memberships.isEmpty()) {
-            Tenant tenant = new Tenant();
-            tenant.setName(defaultTenantName(preferredUsername));
-            tenant.setSlug(generateTenantSlug(preferredUsername));
-            tenant = tenantRepository.save(tenant);
-
-            Membership membership = new Membership();
-            membership.setUser(user);
-            membership.setTenant(tenant);
-            membership.setRole(MembershipRole.OWNER);
-            membership = membershipRepository.save(membership);
-
-            tenantProvisioningService.provisionTenantForUser(user, tenant);
-
-            return LoginResult.builder()
-                .userId(user.getId())
-                .tenantId(tenant.getId())
-                .tenantName(tenant.getName())
-                .tenantSlug(tenant.getSlug())
-                .membershipRole(membership.getRole())
-                .identityChanged(true)
-                .requiresTokenRefresh(true)
-                .requiresToolRelogin(true)
-                .build();
-        }
-
-        Membership currentMembership = memberships.get(0);
 
         return LoginResult.builder()
-            .userId(user.getId())
-            .tenantId(currentMembership.getTenant().getId())
-            .tenantName(currentMembership.getTenant().getName())
-            .tenantSlug(currentMembership.getTenant().getSlug())
-            .membershipRole(currentMembership.getRole())
-            .identityChanged(identityChanged)
-            .requiresTokenRefresh(false)
-            .requiresToolRelogin(false)
+            .userId(createOrUpdateUserResult.user().getId())
+            .tenantId(createOrUpdateUserResult.tenant().getId())
+            .tenantName(createOrUpdateUserResult.tenant().getName())
+            .tenantSlug(createOrUpdateUserResult.tenant().getSlug())
+            .membershipRole(createOrUpdateUserResult.membership().getRole())
+            .identityChanged(createOrUpdateUserResult.identityChanged())
+            .requiresTokenRefresh(missingTools.contains(ProvisioningTool.KEYCLOAK))
+            .requiresToolRelogin(provisioningTriggered)
             .build();
     }
 
-    private boolean updateUserIfNeeded(
-        PathOpsUser user,
-        String preferredUsername,
-        String email
-    ) {
-        boolean changed = false;
+    private Set<ProvisioningTool> getProvisioningToolsNeeded(Tenant tenant) {
+        List<TenantProvisioning> existing = provisioningRepository.findByTenant(tenant);
 
-        if (!equalsNullable(user.getPreferredUsername(), preferredUsername)) {
-            user.setPreferredUsername(preferredUsername);
-            changed = true;
+        if (existing.isEmpty()) {
+            return EnumSet.allOf(ProvisioningTool.class);
         }
 
-        if (!equalsNullable(user.getEmail(), email)) {
-            user.setEmail(email);
-            changed = true;
+        Set<ProvisioningTool> needed = EnumSet.noneOf(ProvisioningTool.class);
+        Set<ProvisioningTool> present = EnumSet.noneOf(ProvisioningTool.class);
+
+        for (TenantProvisioning tp : existing) {
+            present.add(tp.getTool());
+            if (tp.needsProvisioning()) {
+                needed.add(tp.getTool());
+            }
         }
 
-        return changed;
-    }
-
-    private String defaultTenantName(String preferredUsername) {
-        if (preferredUsername == null || preferredUsername.isBlank()) {
-            return "Personal Tenant";
-        }
-        return preferredUsername + " Personal Tenant";
-    }
-
-    private String generateTenantSlug(String preferredUsername) {
-        String base = preferredUsername == null || preferredUsername.isBlank()
-            ? "tenant"
-            : preferredUsername.toLowerCase(Locale.ROOT)
-                .replaceAll("[^a-z0-9]+", "-")
-                .replaceAll("^-+|-+$", "");
-
-        if (base.isBlank()) {
-            base = "tenant";
+        for (ProvisioningTool tool : ProvisioningTool.values()) {
+            if (!present.contains(tool)) {
+                needed.add(tool);
+            }
         }
 
-        return base + "-" + UUID.randomUUID().toString().substring(0, 8);
-    }
-
-    private boolean equalsNullable(String a, String b) {
-        return a == null ? b == null : a.equals(b);
+        return needed;
     }
 }

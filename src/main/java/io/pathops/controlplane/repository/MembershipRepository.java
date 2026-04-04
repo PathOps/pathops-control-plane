@@ -9,5 +9,5 @@ import io.pathops.controlplane.model.PathOpsUser;
 
 public interface MembershipRepository extends JpaRepository<Membership, Long> {
 
-    List<Membership> findByUser(PathOpsUser user);
+    List<Membership> findByUserOrderByCreatedAtAsc(PathOpsUser user);
 }
