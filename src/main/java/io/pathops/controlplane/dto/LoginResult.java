@@ -9,9 +9,6 @@ public record LoginResult(
     Long tenantId,
     String tenantName,
     String tenantSlug,
-    MembershipRole membershipRole,
-    boolean identityChanged,
-    boolean requiresTokenRefresh,
-    boolean requiresToolRelogin
+    MembershipRole membershipRole
 ) {
 }

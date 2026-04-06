@@ -18,25 +18,25 @@ import lombok.Setter;
 
 @Entity
 @Table(
-    name = "tenant_provisionings",
+    name = "membership_provisionings",
     uniqueConstraints = {
-        @UniqueConstraint(name = "uk_tenant_tool", columnNames = {"tenant_id", "tool"})
+        @UniqueConstraint(name = "uk_membership_tool", columnNames = {"membership_id", "tool"})
     }
 )
 @Getter
 @Setter
 @NoArgsConstructor
-public class TenantProvisioning extends AbstractProvisioning {
+public class MembershipProvisioning extends AbstractProvisioning {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
+    @JoinColumn(name = "membership_id", nullable = false)
+    private Membership membership;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "tool", nullable = false)
-    private TenantProvisioningTool tool;
+    private MembershipProvisioningTool tool;
 }

@@ -11,3 +11,6 @@ resources:
   - control-plane/service.yaml
   - control-plane/deployment.yaml
   - control-plane/ingress.yaml
+  - pgadmin/deployment.yaml
+  - pgadmin/service.yaml
+  - pgadmin/ingress.yaml

@@ -1,9 +1,11 @@
 package io.pathops.controlplane.service;
 
 import java.util.List;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.Objects;
 
+import org.springframework.stereotype.Service;
+
+import io.pathops.controlplane.dto.LoginResult;
 import io.pathops.controlplane.model.Membership;
 import io.pathops.controlplane.model.MembershipRole;
 import io.pathops.controlplane.model.PathOpsUser;
@@ -11,7 +13,7 @@ import io.pathops.controlplane.model.Tenant;
 import io.pathops.controlplane.repository.MembershipRepository;
 import io.pathops.controlplane.repository.PathOpsUserRepository;
 import io.pathops.controlplane.repository.TenantRepository;
-import io.pathops.controlplane.utils.StringUtils;
+import io.pathops.controlplane.utils.PathOpsUtils;
 import io.pathops.controlplane.utils.TenantUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -23,15 +25,12 @@ public class UserService {
     private final TenantRepository tenantRepository;
     private final MembershipRepository membershipRepository;
 
-    @Transactional
-    public CreateOrUpdateUserResult createOrUpdateUser(
+    public LoginResult createOrUpdateUser(
         String issuer,
         String subject,
         String preferredUsername,
         String email
     ) {
-        boolean identityChanged = false;
-
         PathOpsUser user = pathOpsUserRepository
             .findByIssuerAndSubject(issuer, subject)
             .orElse(null);
@@ -42,13 +41,21 @@ public class UserService {
             user.setSubject(subject);
             user.setPreferredUsername(preferredUsername);
             user.setEmail(email);
+
+            if (PathOpsUtils.isPathopsRealmIssuer(issuer)) {
+                user.setKeycloakUserId(subject);
+            }
+
             user = pathOpsUserRepository.save(user);
-            identityChanged = true;
         } else {
-            boolean userUpdated = updateUserIfNeeded(user, preferredUsername, email);
+            boolean userUpdated = updateUserIfNeeded(
+            		user,
+            		issuer,
+            		subject,
+            		preferredUsername,
+            		email);
             if (userUpdated) {
                 user = pathOpsUserRepository.save(user);
-                identityChanged = true;
             }
         }
 
@@ -66,41 +73,50 @@ public class UserService {
             membership.setRole(MembershipRole.OWNER);
             membership = membershipRepository.save(membership);
 
-            return new CreateOrUpdateUserResult(
-                user,
-                tenant,
-                membership,
-                true
-            );
+            return LoginResult.builder()
+	            .userId(user.getId())
+	            .tenantId(tenant.getId())
+	            .tenantName(tenant.getName())
+	            .tenantSlug(tenant.getSlug())
+	            .membershipRole(membership.getRole())
+	            .build();
         }
 
         Membership currentMembership = memberships.get(0);
 
-        return new CreateOrUpdateUserResult(
-            user,
-            currentMembership.getTenant(),
-            currentMembership,
-            identityChanged
-        );
+	    return LoginResult.builder()
+	        .userId(user.getId())
+	        .tenantId(currentMembership.getTenant().getId())
+	        .tenantName(currentMembership.getTenant().getName())
+	        .tenantSlug(currentMembership.getTenant().getSlug())
+	        .membershipRole(currentMembership.getRole())
+	        .build();
     }
 
     private boolean updateUserIfNeeded(
         PathOpsUser user,
+        String issuer,
+        String subject,
         String preferredUsername,
         String email
     ) {
-        boolean changed = false;
+    	boolean changed = false;
 
-        if (!StringUtils.equalsNullable(user.getPreferredUsername(), preferredUsername)) {
-            user.setPreferredUsername(preferredUsername);
-            changed = true;
-        }
+    	if (!Objects.equals(user.getEmail(), email)) {
+    	    user.setEmail(email);
+    	    changed = true;
+    	}
 
-        if (!StringUtils.equalsNullable(user.getEmail(), email)) {
-            user.setEmail(email);
-            changed = true;
-        }
+    	if (!Objects.equals(user.getPreferredUsername(), preferredUsername)) {
+    	    user.setPreferredUsername(preferredUsername);
+    	    changed = true;
+    	}
 
-        return changed;
+    	if (user.getKeycloakUserId() == null && PathOpsUtils.isPathopsRealmIssuer(issuer)) {
+    	    user.setKeycloakUserId(subject);
+    	    changed = true;
+    	}
+
+    	return changed;
     }
 }

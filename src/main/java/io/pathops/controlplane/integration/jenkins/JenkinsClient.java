@@ -20,8 +20,8 @@ public class JenkinsClient {
     private final RestTemplate restTemplate;
     private final VaultSecretService vaultSecretService;
 
-    public JenkinsClient(VaultSecretService vaultSecretService) {
-        this.restTemplate = new RestTemplate();
+    public JenkinsClient(RestTemplate pathopsRestTemplate, VaultSecretService vaultSecretService) {
+        this.restTemplate = pathopsRestTemplate;
         this.vaultSecretService = vaultSecretService;
     }
 

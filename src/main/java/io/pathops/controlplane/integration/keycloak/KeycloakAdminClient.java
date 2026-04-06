@@ -26,8 +26,8 @@ public class KeycloakAdminClient {
     private final RestTemplate restTemplate;
     private final VaultSecretService vaultSecretService;
 
-    public KeycloakAdminClient(VaultSecretService vaultSecretService) {
-        this.restTemplate = new RestTemplate();
+    public KeycloakAdminClient(RestTemplate pathopsRestTemplate, VaultSecretService vaultSecretService) {
+        this.restTemplate = pathopsRestTemplate;
         this.vaultSecretService = vaultSecretService;
     }
 
@@ -78,8 +78,12 @@ public class KeycloakAdminClient {
     }
 
     public String resolveUserId(PathOpsUser user) {
-        if (user.getKeycloakUserId() != null && !user.getKeycloakUserId().isBlank()) {
+        if (hasText(user.getKeycloakUserId())) {
             return user.getKeycloakUserId();
+        }
+
+        if (isPathopsRealmUser(user) && hasText(user.getSubject())) {
+            return user.getSubject();
         }
 
         String token = obtainAccessToken();
@@ -98,6 +102,15 @@ public class KeycloakAdminClient {
         throw new IllegalStateException(
             "Could not resolve Keycloak user id for user issuer=" + user.getIssuer() + ", subject=" + user.getSubject()
         );
+    }
+
+    private boolean isPathopsRealmUser(PathOpsUser user) {
+        return user.getIssuer() != null
+            && user.getIssuer().equals("https://keycloak.demo.pathops.io/realms/pathops");
+    }
+
+    private boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     @SuppressWarnings("unchecked")

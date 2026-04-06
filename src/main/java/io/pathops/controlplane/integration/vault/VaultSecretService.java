@@ -24,8 +24,8 @@ public class VaultSecretService {
     @Value("${pathops.vault.kv-mount:secret}")
     private String kvMount;
 
-    public VaultSecretService() {
-        this.restTemplate = new RestTemplate();
+    public VaultSecretService(RestTemplate pathopsRestTemplate) {
+        this.restTemplate = pathopsRestTemplate;
     }
 
     @SuppressWarnings("unchecked")
