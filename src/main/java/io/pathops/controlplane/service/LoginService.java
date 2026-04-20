@@ -12,8 +12,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoginService {
 
-    private final UserService userService;
-    private final ProvisioningService provisioningService;
+    private final LoginUserService loginUserService;
+    private final LoginProvisioningOrchestrator loginProvisioningOrchestrator;
 
     @Transactional
     public LoginResult login(Jwt jwt) {
@@ -22,14 +22,14 @@ public class LoginService {
         String preferredUsername = JwtUtils.getPreferredUsername(jwt);
         String email = JwtUtils.getEmail(jwt);
 
-        LoginResult loginResult = userService.createOrUpdateUser(
+        LoginResult loginResult = loginUserService.createOrUpdateUser(
             issuer,
             subject,
             preferredUsername,
             email
         );
 
-        provisioningService.enqueueForLogin(
+        loginProvisioningOrchestrator.enqueueForLogin(
             loginResult.userId(),
             loginResult.tenantId(),
             loginResult.membershipRole()

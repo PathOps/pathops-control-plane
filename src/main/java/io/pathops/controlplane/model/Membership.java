@@ -51,7 +51,7 @@ public class Membership {
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private PathOpsUser user;
+    private User user;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)

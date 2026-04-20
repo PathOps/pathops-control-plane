@@ -1,4 +1,5 @@
 package io.pathops.controlplane.model;
+
 import java.time.Instant;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -8,31 +9,28 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
-    name = "apps",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_app_tenant_slug", columnNames = {"tenant_id", "slug"})
-    }
-)
+	    name = "users",
+	    uniqueConstraints = {
+	        @UniqueConstraint(name = "uk_user_issuer_subject", columnNames = {"issuer", "subject"})
+	    }
+	)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
-public class App {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,13 +44,18 @@ public class App {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
+    @Column(name = "issuer", nullable = false)
+    private String issuer;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "subject", nullable = false)
+    private String subject;
 
-    @Column(name = "slug", nullable = false)
-    private String slug;
+    @Column(name = "preferred_username", nullable = false)
+    private String preferredUsername;
+
+    @Column(name = "email")
+    private String email;
+    
+    @Column(name = "keycloak_user_id")
+    private String keycloakUserId;
 }

@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import io.pathops.controlplane.model.PathOpsUser;
+import io.pathops.controlplane.model.User;
 
-public interface PathOpsUserRepository extends JpaRepository<PathOpsUser, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-	Optional<PathOpsUser> findByIssuerAndSubject(String issuer, String subject);
+	Optional<User> findByIssuerAndSubject(String issuer, String subject);
 	
     @Query("""
             select m.user
@@ -18,5 +18,5 @@ public interface PathOpsUserRepository extends JpaRepository<PathOpsUser, Long> 
               and m.role = io.pathops.controlplane.model.MembershipRole.OWNER
             order by m.createdAt asc
         """)
-    Optional<PathOpsUser> findFirstOwnerByTenantId(Long tenantId);
+    Optional<User> findFirstOwnerByTenantId(Long tenantId);
 }

@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import io.pathops.controlplane.dto.LoginResult;
 import io.pathops.controlplane.model.Membership;
 import io.pathops.controlplane.model.MembershipRole;
-import io.pathops.controlplane.model.PathOpsUser;
+import io.pathops.controlplane.model.User;
 import io.pathops.controlplane.model.Tenant;
 import io.pathops.controlplane.repository.MembershipRepository;
-import io.pathops.controlplane.repository.PathOpsUserRepository;
+import io.pathops.controlplane.repository.UserRepository;
 import io.pathops.controlplane.repository.TenantRepository;
 import io.pathops.controlplane.utils.PathOpsUtils;
 import io.pathops.controlplane.utils.TenantUtils;
@@ -19,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class LoginUserService {
 
-    private final PathOpsUserRepository pathOpsUserRepository;
+    private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final MembershipRepository membershipRepository;
 
@@ -31,12 +31,12 @@ public class UserService {
         String preferredUsername,
         String email
     ) {
-        PathOpsUser user = pathOpsUserRepository
+        User user = userRepository
             .findByIssuerAndSubject(issuer, subject)
             .orElse(null);
 
         if (user == null) {
-            user = new PathOpsUser();
+            user = new User();
             user.setIssuer(issuer);
             user.setSubject(subject);
             user.setPreferredUsername(preferredUsername);
@@ -46,7 +46,7 @@ public class UserService {
                 user.setKeycloakUserId(subject);
             }
 
-            user = pathOpsUserRepository.save(user);
+            user = userRepository.save(user);
         } else {
             boolean userUpdated = updateUserIfNeeded(
             		user,
@@ -55,7 +55,7 @@ public class UserService {
             		preferredUsername,
             		email);
             if (userUpdated) {
-                user = pathOpsUserRepository.save(user);
+                user = userRepository.save(user);
             }
         }
 
@@ -94,7 +94,7 @@ public class UserService {
     }
 
     private boolean updateUserIfNeeded(
-        PathOpsUser user,
+        User user,
         String issuer,
         String subject,
         String preferredUsername,

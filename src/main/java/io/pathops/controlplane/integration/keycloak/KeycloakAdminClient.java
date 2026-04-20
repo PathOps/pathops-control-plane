@@ -18,7 +18,7 @@ import org.springframework.web.client.RestTemplate;
 
 import io.pathops.controlplane.integration.vault.KeycloakAdminCredentials;
 import io.pathops.controlplane.integration.vault.VaultSecretService;
-import io.pathops.controlplane.model.PathOpsUser;
+import io.pathops.controlplane.model.User;
 
 @Component
 public class KeycloakAdminClient {
@@ -77,7 +77,7 @@ public class KeycloakAdminClient {
         );
     }
 
-    public String resolveUserId(PathOpsUser user) {
+    public String resolveUserId(User user) {
         if (hasText(user.getKeycloakUserId())) {
             return user.getKeycloakUserId();
         }
@@ -104,7 +104,7 @@ public class KeycloakAdminClient {
         );
     }
 
-    private boolean isPathopsRealmUser(PathOpsUser user) {
+    private boolean isPathopsRealmUser(User user) {
         return user.getIssuer() != null
             && user.getIssuer().equals("https://keycloak.demo.pathops.io/realms/pathops");
     }
