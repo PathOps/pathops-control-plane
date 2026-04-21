@@ -33,4 +33,7 @@ public class ToolProjectionConfig extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "scope", nullable = false)
     private ToolProjectionScope scope;
+    
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled;
 }

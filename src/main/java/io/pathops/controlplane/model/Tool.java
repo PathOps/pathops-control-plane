@@ -51,6 +51,6 @@ public class Tool extends BaseEntity {
     @Column(name = "provider", nullable = false)
     private ToolProvider provider;
 
-    @Column(name = "baseUrl", nullable = false)
+    @Column(name = "base_url", nullable = false)
     private String baseUrl;
 }
