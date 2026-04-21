@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 public class LoginService {
 
     private final LoginUserService loginUserService;
-    private final LoginProvisioningOrchestrator loginProvisioningOrchestrator;
+    private final LoginProjectionService loginProjectionService;
 
     @Transactional
     public LoginResult login(Jwt jwt) {
@@ -29,7 +29,7 @@ public class LoginService {
             email
         );
 
-        loginProvisioningOrchestrator.enqueueForLogin(
+        loginProjectionService.enqueueForLogin(
             loginResult.userId(),
             loginResult.tenantId(),
             loginResult.membershipRole()
