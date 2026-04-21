@@ -13,7 +13,6 @@ import io.pathops.controlplane.model.Tenant;
 import io.pathops.controlplane.repository.MembershipRepository;
 import io.pathops.controlplane.repository.UserRepository;
 import io.pathops.controlplane.repository.TenantRepository;
-import io.pathops.controlplane.utils.PathOpsUtils;
 import io.pathops.controlplane.utils.TenantUtils;
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +23,7 @@ public class LoginUserService {
     private final UserRepository userRepository;
     private final TenantRepository tenantRepository;
     private final MembershipRepository membershipRepository;
+    private final TenantSlugService tenantSlugService;
 
     public LoginResult createOrUpdateUser(
         String issuer,
@@ -41,10 +41,6 @@ public class LoginUserService {
             user.setSubject(subject);
             user.setPreferredUsername(preferredUsername);
             user.setEmail(email);
-
-            if (PathOpsUtils.isPathopsRealmIssuer(issuer)) {
-                user.setKeycloakUserId(subject);
-            }
 
             user = userRepository.save(user);
         } else {
@@ -64,7 +60,7 @@ public class LoginUserService {
         if (memberships.isEmpty()) {
             Tenant tenant = new Tenant();
             tenant.setName(TenantUtils.defaultTenantName(preferredUsername));
-            tenant.setSlug(TenantUtils.generateTenantSlug(preferredUsername));
+            tenant.setSlug(tenantSlugService.generateTenantSlug(preferredUsername));
             tenant = tenantRepository.save(tenant);
 
             Membership membership = new Membership();
@@ -82,8 +78,10 @@ public class LoginUserService {
 	            .build();
         }
 
-        Membership currentMembership = memberships.get(0);
-
+        Membership currentMembership = membershipRepository
+        	    .findFirstByUserAndRoleOrderByCreatedAtAsc(user, MembershipRole.OWNER)
+        	    .orElseThrow(() -> new IllegalStateException("User has no OWNER membership"));
+        
 	    return LoginResult.builder()
 	        .userId(user.getId())
 	        .tenantId(currentMembership.getTenant().getId())
@@ -109,11 +107,6 @@ public class LoginUserService {
 
     	if (!Objects.equals(user.getPreferredUsername(), preferredUsername)) {
     	    user.setPreferredUsername(preferredUsername);
-    	    changed = true;
-    	}
-
-    	if (user.getKeycloakUserId() == null && PathOpsUtils.isPathopsRealmIssuer(issuer)) {
-    	    user.setKeycloakUserId(subject);
     	    changed = true;
     	}
 

@@ -7,7 +7,7 @@ data:
   DB_CONNECTION_URL: jdbc:postgresql://control-plane-postgres:5432/pathops_control_plane
   HIBERNATE_DDL_AUTO: "validate"
   JPA_SHOW_SQL: "false"
-  KEYCLOAK_JWK_URI: "https://keycloak.demo.pathops.io/realms/pathops/protocol/openid-connect/certs"
+  PATHOPS_AUTH_JWK_SET_URI: "https://keycloak.demo.pathops.io/realms/pathops/protocol/openid-connect/certs"
   PATHOPS_PUBLIC_BASE_URL: "https://control-plane.demo.pathops.io"
   PATHOPS_AUTH_ISSUER: "https://keycloak.demo.pathops.io/realms/pathops"
   PATHOPS_AUTH_CLIENT_ID: "control-plane-public"

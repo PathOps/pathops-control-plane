@@ -21,12 +21,12 @@ import io.pathops.controlplane.integration.vault.VaultSecretService;
 import io.pathops.controlplane.model.User;
 
 @Component
-public class KeycloakAdminClient {
+public class KeycloakIdentityProjectionClient {
 
     private final RestTemplate restTemplate;
     private final VaultSecretService vaultSecretService;
 
-    public KeycloakAdminClient(RestTemplate pathopsRestTemplate, VaultSecretService vaultSecretService) {
+    public KeycloakIdentityProjectionClient(RestTemplate pathopsRestTemplate, VaultSecretService vaultSecretService) {
         this.restTemplate = pathopsRestTemplate;
         this.vaultSecretService = vaultSecretService;
     }
@@ -78,9 +78,6 @@ public class KeycloakAdminClient {
     }
 
     public String resolveUserId(User user) {
-        if (hasText(user.getKeycloakUserId())) {
-            return user.getKeycloakUserId();
-        }
 
         if (isPathopsRealmUser(user) && hasText(user.getSubject())) {
             return user.getSubject();

@@ -11,37 +11,26 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
-
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(
-    name = "memberships",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_membership_user_tenant", columnNames = {"user_id", "tenant_id"})
-    }
-)
+@Table(name = "tool_projection_configs")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Membership extends BaseEntity {
+public class ToolProjectionConfig extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "tenant_id", nullable = false)
-    private Tenant tenant;
+    @JoinColumn(name = "tool_id", nullable = false)
+    private Tool tool;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private MembershipRole role;
+    @Column(name = "scope", nullable = false)
+    private ToolProjectionScope scope;
 }

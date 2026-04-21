@@ -12,36 +12,45 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(
-    name = "memberships",
-    uniqueConstraints = {
-        @UniqueConstraint(name = "uk_membership_user_tenant", columnNames = {"user_id", "tenant_id"})
-    }
-)
+	    name = "tools",
+	    uniqueConstraints = {
+	        @UniqueConstraint(name = "uk_tool_name_tenant", columnNames = {"name", "tenant_id"})
+	    }
+	)
 @Getter
 @Setter
 @NoArgsConstructor
-public class Membership extends BaseEntity {
-
+public class Tool extends BaseEntity {
+	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
+    
+    @Column(name = "name", nullable = false)
+    private String name;
+    
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id", nullable = false)
     private Tenant tenant;
-
+    
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
+    
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private MembershipRole role;
+    @Column(name = "type", nullable = false)
+    private ToolType type;
+ 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider", nullable = false)
+    private ToolProvider provider;
+
+    @Column(name = "baseUrl", nullable = false)
+    private String baseUrl;
 }

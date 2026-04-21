@@ -1,13 +1,12 @@
 package io.pathops.controlplane.utils;
 
 import java.util.Locale;
-import java.util.UUID;
 
 public final class TenantUtils {
 
     private TenantUtils() {
     }
-    
+
     public static String defaultTenantName(String preferredUsername) {
         if (preferredUsername == null || preferredUsername.isBlank()) {
             return "Personal Tenant";
@@ -15,7 +14,7 @@ public final class TenantUtils {
         return preferredUsername + " Personal Tenant";
     }
 
-    public static String generateTenantSlug(String preferredUsername) {
+    public static String slugBase(String preferredUsername) {
         String base = preferredUsername == null || preferredUsername.isBlank()
             ? "tenant"
             : preferredUsername.toLowerCase(Locale.ROOT)
@@ -23,9 +22,9 @@ public final class TenantUtils {
                 .replaceAll("^-+|-+$", "");
 
         if (base.isBlank()) {
-            base = "tenant";
+            return "tenant";
         }
 
-        return base + "-" + UUID.randomUUID().toString().substring(0, 8);
+        return base;
     }
 }
