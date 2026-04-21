@@ -37,7 +37,7 @@ public class TenantToolProjection extends BaseEntity {
     @Column(name = "status", nullable = false)
     private ToolProjectionStatus status;
 
-    @Column(name = "started_at", nullable = false)
+    @Column(name = "started_at")
     private Instant startedAt;
 
     @Column(name = "finished_at")
