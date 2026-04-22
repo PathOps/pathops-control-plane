@@ -1,5 +1,6 @@
 package io.pathops.controlplane.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,10 @@ import lombok.RequiredArgsConstructor;
 public class LoginService {
 
     private final LoginUserService loginUserService;
-    private final LoginProjectionService loginProjectionService;
+    private final DemoTenantBootstrapService demoTenantBootstrapService;
+    
+    @Value("${pathops.demo.bootstrap.enabled}")
+    private boolean demoBootstrapEnabled;
 
     @Transactional
     public LoginResult login(Jwt jwt) {
@@ -28,12 +32,13 @@ public class LoginService {
             preferredUsername,
             email
         );
-
-        loginProjectionService.enqueueForLogin(
-            loginResult.userId(),
-            loginResult.tenantId(),
-            loginResult.membershipRole()
-        );
+        
+        if (demoBootstrapEnabled && loginResult.tenantCreated()) {
+            demoTenantBootstrapService.bootstrapTenant(
+                loginResult.tenantId(),
+                loginResult.userId()
+            );
+        }
 
         return loginResult;
     }

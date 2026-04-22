@@ -75,6 +75,7 @@ public class LoginUserService {
 	            .tenantName(tenant.getName())
 	            .tenantSlug(tenant.getSlug())
 	            .membershipRole(membership.getRole())
+	            .tenantCreated(true)
 	            .build();
         }
 
@@ -88,6 +89,7 @@ public class LoginUserService {
 	        .tenantName(currentMembership.getTenant().getName())
 	        .tenantSlug(currentMembership.getTenant().getSlug())
 	        .membershipRole(currentMembership.getRole())
+	        .tenantCreated(false)
 	        .build();
     }
 

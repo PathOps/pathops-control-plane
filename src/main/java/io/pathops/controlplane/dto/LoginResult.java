@@ -9,6 +9,7 @@ public record LoginResult(
     Long tenantId,
     String tenantName,
     String tenantSlug,
-    MembershipRole membershipRole
+    MembershipRole membershipRole,
+    boolean tenantCreated
 ) {
 }

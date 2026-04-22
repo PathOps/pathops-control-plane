@@ -13,3 +13,6 @@ data:
   PATHOPS_AUTH_CLIENT_ID: "control-plane-public"
   PATHOPS_VAULT_BASE_URL: "https://vault.demo.pathops.io"
   PATHOPS_VAULT_KV_MOUNT: "secret"
+  PATHOPS_DEMO_TOOLS_KEYCLOAK_BASE_URL: "https://keycloak.demo.pathops.io"
+  PATHOPS_DEMO_TOOLS_JENKINS_BASE_URL: "https://jenkins.demo.pathops.io"
+  PATHOPS_DEMO_BOOTSTRAP_ENABLED: "true"

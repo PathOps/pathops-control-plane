@@ -29,6 +29,22 @@
       "name": "pathops.vault.kv-mount",
       "type": "java.lang.String",
       "description": "Vault KV v2 mount name."
+    },
+    {
+      "name": "pathops.demo.bootstrap.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to bootstrap demo tools and projections for new tenants.",
+      "defaultValue": false
+    },
+    {
+      "name": "pathops.demo.tools.keycloak.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL of the demo Keycloak instance."
+    },
+    {
+      "name": "pathops.demo.tools.jenkins.base-url",
+      "type": "java.lang.String",
+      "description": "Base URL of the demo Jenkins instance."
     }
   ]
 }
