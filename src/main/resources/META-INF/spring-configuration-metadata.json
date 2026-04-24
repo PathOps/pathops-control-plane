@@ -16,35 +16,10 @@
       "description": "OAuth2 client ID for the control plane public client."
     },
     {
-      "name": "pathops.vault.base-url",
-      "type": "java.lang.String",
-      "description": "Base URL of Vault."
-    },
-    {
-      "name": "pathops.vault.token",
-      "type": "java.lang.String",
-      "description": "Vault token used by the control plane."
-    },
-    {
-      "name": "pathops.vault.kv-mount",
-      "type": "java.lang.String",
-      "description": "Vault KV v2 mount name."
-    },
-    {
-      "name": "pathops.demo.bootstrap.enabled",
+      "name": "pathops.events.publishing.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether to bootstrap demo tools and projections for new tenants.",
+      "description": "Enable event publishing.",
       "defaultValue": false
-    },
-    {
-      "name": "pathops.demo.tools.keycloak.base-url",
-      "type": "java.lang.String",
-      "description": "Base URL of the demo Keycloak instance."
-    },
-    {
-      "name": "pathops.demo.tools.jenkins.base-url",
-      "type": "java.lang.String",
-      "description": "Base URL of the demo Jenkins instance."
     }
   ]
 }

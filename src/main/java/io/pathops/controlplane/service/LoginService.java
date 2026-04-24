@@ -14,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 public class LoginService {
 
     private final LoginUserService loginUserService;
-    private final DemoTenantBootstrapService demoTenantBootstrapService;
+    private final EventPublisherService eventPublisherService;
     
-    @Value("${pathops.demo.bootstrap.enabled}")
-    private boolean demoBootstrapEnabled;
+    @Value("${pathops.events.publishing.enabled}")
+    private boolean eventPublishingEnabled;
 
     @Transactional
     public LoginResult login(Jwt jwt) {
@@ -33,10 +33,9 @@ public class LoginService {
             email
         );
         
-        if (demoBootstrapEnabled && loginResult.tenantCreated()) {
-            demoTenantBootstrapService.bootstrapTenant(
-                loginResult.tenantId(),
-                loginResult.userId()
+        if (eventPublishingEnabled && loginResult.tenantCreated()) {
+        	eventPublisherService.publishTenantCreatedEvent(
+        		loginResult.tenantId()
             );
         }
 
