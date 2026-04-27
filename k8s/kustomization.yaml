@@ -7,6 +7,10 @@ resources:
   - postgres/service.yaml
   - postgres/pvc.yaml
   - postgres/statefulset.yaml
+  - rabbitmq/configmap.yaml
+  - rabbitmq/pvc.yaml
+  - rabbitmq/service.yaml
+  - rabbitmq/statefulset.yaml
   - control-plane/configmap.yaml
   - control-plane/service.yaml
   - control-plane/deployment.yaml

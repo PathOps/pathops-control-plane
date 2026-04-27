@@ -15,7 +15,7 @@ public class LoginService {
 
     private final LoginUserService loginUserService;
     private final EventPublisherService eventPublisherService;
-    
+
     @Value("${pathops.events.publishing.enabled}")
     private boolean eventPublishingEnabled;
 
@@ -32,11 +32,9 @@ public class LoginService {
             preferredUsername,
             email
         );
-        
+
         if (eventPublishingEnabled && loginResult.tenantCreated()) {
-        	eventPublisherService.publishTenantCreatedEvent(
-        		loginResult.tenantId()
-            );
+            eventPublisherService.publishTenantCreatedEvent(loginResult);
         }
 
         return loginResult;

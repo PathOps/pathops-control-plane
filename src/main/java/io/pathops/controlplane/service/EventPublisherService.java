@@ -1,16 +1,27 @@
 package io.pathops.controlplane.service;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import io.pathops.controlplane.dto.LoginResult;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class EventPublisherService {
-	
-	public void publishTenantCreatedEvent(Long tenantId) {
-		log.info("TODO");
-	}
+
+    private final OutboxEventService outboxEventService;
+
+    public void publishTenantCreatedEvent(LoginResult loginResult) {
+        var event = outboxEventService.createTenantCreatedEvent(loginResult);
+
+        log.info(
+            "Created outbox event. eventId={}, eventType={}, aggregateType={}, aggregateId={}",
+            event.getEventId(),
+            event.getEventType(),
+            event.getAggregateType(),
+            event.getAggregateId()
+        );
+    }
 }

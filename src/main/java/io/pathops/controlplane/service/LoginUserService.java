@@ -70,27 +70,29 @@ public class LoginUserService {
             membership = membershipRepository.save(membership);
 
             return LoginResult.builder()
-	            .userId(user.getId())
-	            .tenantId(tenant.getId())
-	            .tenantName(tenant.getName())
-	            .tenantSlug(tenant.getSlug())
-	            .membershipRole(membership.getRole())
-	            .tenantCreated(true)
-	            .build();
+	    	    .userId(user.getId())
+	    	    .tenantId(tenant.getId())
+	    	    .tenantName(tenant.getName())
+	    	    .tenantSlug(tenant.getSlug())
+	    	    .membershipId(membership.getId())
+	    	    .membershipRole(membership.getRole())
+	    	    .tenantCreated(true)
+	    	    .build();
         }
 
         Membership currentMembership = membershipRepository
         	    .findFirstByUserAndRoleOrderByCreatedAtAsc(user, MembershipRole.OWNER)
         	    .orElseThrow(() -> new IllegalStateException("User has no OWNER membership"));
         
-	    return LoginResult.builder()
-	        .userId(user.getId())
-	        .tenantId(currentMembership.getTenant().getId())
-	        .tenantName(currentMembership.getTenant().getName())
-	        .tenantSlug(currentMembership.getTenant().getSlug())
-	        .membershipRole(currentMembership.getRole())
-	        .tenantCreated(false)
-	        .build();
+        return LoginResult.builder()
+    	    .userId(user.getId())
+    	    .tenantId(currentMembership.getTenant().getId())
+    	    .tenantName(currentMembership.getTenant().getName())
+    	    .tenantSlug(currentMembership.getTenant().getSlug())
+    	    .membershipId(currentMembership.getId())
+    	    .membershipRole(currentMembership.getRole())
+    	    .tenantCreated(false)
+    	    .build();
     }
 
     private boolean updateUserIfNeeded(
