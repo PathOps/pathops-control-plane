@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class LoginService {
 
     private final LoginUserService loginUserService;
-    private final EventPublisherService eventPublisherService;
+    private final TenantEventService tenantEventService;
 
     @Value("${pathops.events.publishing.enabled}")
     private boolean eventPublishingEnabled;
@@ -34,7 +34,7 @@ public class LoginService {
         );
 
         if (eventPublishingEnabled && loginResult.tenantCreated()) {
-            eventPublisherService.publishTenantCreatedEvent(loginResult);
+        	tenantEventService.tenantCreated(loginResult);
         }
 
         return loginResult;

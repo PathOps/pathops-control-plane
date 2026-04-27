@@ -5,29 +5,29 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import tools.jackson.core.JacksonException;
-import tools.jackson.databind.ObjectMapper;
-
 import io.pathops.controlplane.config.RabbitMqEventsConfig;
 import io.pathops.controlplane.dto.LoginResult;
 import io.pathops.controlplane.dto.events.TenantCreatedEventPayload;
 import io.pathops.controlplane.model.OutboxEvent;
 import io.pathops.controlplane.model.OutboxEventStatus;
-import io.pathops.controlplane.repository.OutboxEventRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class OutboxEventService {
+public class TenantEventService {
 
     private static final String TENANT_CREATED = "TENANT_CREATED";
     private static final String TENANT = "TENANT";
 
-    private final OutboxEventRepository outboxEventRepository;
     private final ObjectMapper objectMapper;
     private final RabbitMqEventsConfig rabbitMqEventsConfig;
+    private final OutboxEventStoreService outboxEventStoreService;
 
-    public OutboxEvent createTenantCreatedEvent(LoginResult loginResult) {
+    public void tenantCreated(LoginResult loginResult) {
         UUID eventId = UUID.randomUUID();
         Instant occurredAt = Instant.now();
 
@@ -59,14 +59,21 @@ public class OutboxEventService {
         event.setStatus(OutboxEventStatus.PENDING);
         event.setAttempts(0);
 
-        return outboxEventRepository.save(event);
+        event = outboxEventStoreService.save(event);
+
+        log.info(
+            "Created tenant event in outbox. eventId={}, eventType={}, tenantId={}",
+            event.getEventId(),
+            event.getEventType(),
+            loginResult.tenantId()
+        );
     }
 
     private String toJson(Object payload) {
         try {
             return objectMapper.writeValueAsString(payload);
         } catch (JacksonException e) {
-            throw new IllegalStateException("Failed to serialize outbox event payload", e);
+            throw new IllegalStateException("Failed to serialize tenant event payload", e);
         }
     }
 }
