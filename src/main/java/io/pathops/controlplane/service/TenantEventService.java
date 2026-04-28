@@ -46,6 +46,12 @@ public class TenantEventService {
                 .role(loginResult.membershipRole())
                 .userId(loginResult.userId())
                 .build())
+            .ownerIdentity(TenantCreatedEventPayload.OwnerIdentity.builder()
+            	    .issuer(loginResult.issuer())
+            	    .subject(loginResult.subject())
+            	    .preferredUsername(loginResult.preferredUsername())
+            	    .email(loginResult.email())
+            	    .build())
             .build();
 
         OutboxEvent event = new OutboxEvent();

@@ -11,6 +11,10 @@ public record LoginResult(
     String tenantSlug,
     Long membershipId,
     MembershipRole membershipRole,
-    boolean tenantCreated
+    boolean tenantCreated,
+    String issuer,
+    String subject,
+    String preferredUsername,
+    String email
 ) {
 }

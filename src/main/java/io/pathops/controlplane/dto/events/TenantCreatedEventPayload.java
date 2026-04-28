@@ -12,7 +12,8 @@ public record TenantCreatedEventPayload(
     String eventType,
     Instant occurredAt,
     TenantInfo tenant,
-    OwnerMembershipInfo ownerMembership
+    OwnerMembershipInfo ownerMembership,
+    OwnerIdentity ownerIdentity
 ) {
     @Builder
     public record TenantInfo(
@@ -28,6 +29,14 @@ public record TenantCreatedEventPayload(
         Long id,
         MembershipRole role,
         Long userId
+    ) {
+    }
+    @Builder
+    public record OwnerIdentity(
+    	String issuer,
+    	String subject,
+    	String preferredUsername,
+    	String email
     ) {
     }
 }

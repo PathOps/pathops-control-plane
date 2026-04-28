@@ -77,6 +77,10 @@ public class LoginUserService {
 	    	    .membershipId(membership.getId())
 	    	    .membershipRole(membership.getRole())
 	    	    .tenantCreated(true)
+	    	    .issuer(issuer)
+	    	    .subject(subject)
+	    	    .preferredUsername(preferredUsername)
+	    	    .email(email)
 	    	    .build();
         }
 
@@ -92,6 +96,10 @@ public class LoginUserService {
     	    .membershipId(currentMembership.getId())
     	    .membershipRole(currentMembership.getRole())
     	    .tenantCreated(false)
+    	    .issuer(issuer)
+    	    .subject(subject)
+    	    .preferredUsername(preferredUsername)
+    	    .email(email)
     	    .build();
     }
 
